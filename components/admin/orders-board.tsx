@@ -50,7 +50,7 @@ export default function OrdersBoard() {
   const { toast } = useToast();
   const [soundOn, setSoundOn] = useState(false);
   const [liveStatus, setLiveStatus] = useState<
-    "connecting" | "live" | "offline"
+    "connecting" | "live" | "offline" | "unauthorized"
   >("connecting");
   const esRef = useRef<EventSource | null>(null);
   const retryDelayRef = useRef<number>(1000);
@@ -177,9 +177,17 @@ export default function OrdersBoard() {
           }
           qc.invalidateQueries({ queryKey: ["orders"] });
         };
-        es.onerror = () => {
+        es.onerror = async () => {
           try {
             es.close();
+          } catch {}
+          // Detect unauthorized by probing a staff-only endpoint
+          try {
+            const res = await fetch("/api/orders", { cache: "no-store" });
+            if (res.status === 401) {
+              setLiveStatus("unauthorized");
+              return;
+            }
           } catch {}
           scheduleReconnect();
         };
@@ -196,6 +204,7 @@ export default function OrdersBoard() {
       if (
         document.visibilityState === "visible" &&
         liveStatus !== "live" &&
+        liveStatus !== "unauthorized" &&
         !reconnectTimerRef.current
       ) {
         // Attempt a quicker reconnect when user returns
