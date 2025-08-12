@@ -1,0 +1,53 @@
+import { NextResponse } from "next/server";
+import { subscribe } from "@/lib/realtime";
+import { getToken } from "next-auth/jwt";
+
+export const runtime = "edge";
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  // Optional: if you want to restrict by staff or by order ownership, check token here
+  await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
+  const { id } = await params;
+  const channel = `order:${id}`;
+  let closed = false;
+  let unsub: (() => void) | null = null;
+  let hbTimer: number | null = null;
+
+  const stream = new ReadableStream<string>({
+    start(controller) {
+      const safeEnqueue = (chunk: string) => {
+        if (closed) return;
+        try {
+          controller.enqueue(chunk);
+        } catch {
+          // ignore enqueue after close
+        }
+      };
+      const send = (data: unknown) =>
+        safeEnqueue(`data: ${JSON.stringify(data)}\n\n`);
+      unsub = subscribe(channel, send);
+      send({ ok: true });
+      const heartbeat = () => {
+        if (closed) return;
+        safeEnqueue(`:\n\n`);
+        hbTimer = setTimeout(heartbeat, 15000) as unknown as number;
+      };
+      hbTimer = setTimeout(heartbeat, 15000) as unknown as number;
+    },
+    cancel() {
+      closed = true;
+      if (hbTimer) clearTimeout(hbTimer);
+      if (unsub) unsub();
+    },
+  });
+  return new NextResponse(stream, {
+    headers: {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
+}

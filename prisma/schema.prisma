@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  role       String
+  password_hash String
+  name       String?
+  created_at DateTime @default(now())
+}
+
+model Rooms {
+  room_number  String  @id
+  status       String
+  current_guest String?
+  qr_code_url   String?
+}
+
+model Categories {
+  id            String  @id @default(cuid())
+  name          String
+  display_order Int? 
+  is_active     Boolean @default(true)
+  MenuItems     MenuItems[]
+}
+
+model MenuItems {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  price        Int
+  category_id  String?
+  image_url    String?
+  dietary_info Json?
+  is_available Boolean  @default(true)
+
+  category Categories? @relation(fields: [category_id], references: [id])
+  OrderItems OrderItems[]
+}
+
+model Orders {
+  id                    String   @id @default(cuid())
+  room_number           String
+  status                String
+  total_amount          Int
+  special_instructions  String?
+  created_at            DateTime @default(now())
+  estimated_delivery    String?
+
+  OrderItems OrderItems[]
+  Reviews    Reviews[]
+}
+
+model OrderItems {
+  id           String   @id @default(cuid())
+  order_id     String
+  menu_item_id String
+  quantity     Int
+  customizations String?
+  unit_price   Int
+
+  order Orders    @relation(fields: [order_id], references: [id])
+  item  MenuItems @relation(fields: [menu_item_id], references: [id])
+}
+
+model Reviews {
+  id         String   @id @default(cuid())
+  order_id   String
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+
+  order Orders @relation(fields: [order_id], references: [id])
+}
