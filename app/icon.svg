@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Background to ensure contrast in light/dark browser themes -->
+  <rect width="48" height="48" rx="10" fill="#111827"/>
+  <!-- Mark extracted from placeholder-logo.svg, centered -->
+  <g transform="translate(4 0)">
+    <path fill="#ffffff" fill-rule="evenodd" clip-rule="evenodd" d="m7.839 40.783 16.03-28.054L20 6 0 40.783h7.839Zm8.214 0H40L27.99 19.894l-4.02 7.032 3.976 6.914H20.02l-3.967 6.943Z"/>
+  </g>
+</svg>

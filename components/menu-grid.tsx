@@ -182,7 +182,7 @@ function MenuGridList({
     return <div className="text-sm text-muted-foreground">No items found.</div>;
   }
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
       {items.map((item) => (
         <Card
           key={item.id}
@@ -202,15 +202,13 @@ function MenuGridList({
                 priority={false}
               />
             </div>
-            <CardTitle className="flex items-center justify-between text-base">
-              <span className="truncate">{item.name}</span>
-              <span className="text-primary">
+            <CardTitle className="grid grid-cols-[1fr_auto] items-start gap-2 text-base">
+              <span className="break-words">{item.name}</span>
+              <span className="text-primary whitespace-nowrap">
                 ${(item.price / 100).toFixed(2)}
               </span>
             </CardTitle>
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {item.description}
-            </p>
+            <p className="text-sm text-muted-foreground">{item.description}</p>
             <div className="flex flex-wrap gap-2">
               {item.dietary_info?.vegetarian && (
                 <Badge variant="outline">Vegetarian</Badge>
