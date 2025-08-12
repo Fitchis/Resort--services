@@ -5,22 +5,22 @@ type Listener<T = unknown> = (payload: T) => void;
 // Memory fallback for local/dev and single-process deployments
 const memoryChannels = new Map<string, Set<Listener>>();
 
-function isRedisEnabled() {
-  return (
-    typeof process !== "undefined" &&
-    !!process.env.UPSTASH_REDIS_REST_URL &&
-    !!process.env.UPSTASH_REDIS_REST_TOKEN
-  );
-}
-
 let redisClient: Redis | null = null;
 function getRedis(): Redis | null {
-  if (!isRedisEnabled()) return null;
-  if (!redisClient) {
-    redisClient = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL as string,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN as string,
-    });
+  if (redisClient !== null) return redisClient;
+  try {
+    // Works in Node and Edge if env vars are present
+    const client = (Redis as any).fromEnv
+      ? (Redis as any).fromEnv()
+      : new Redis({
+          url: (process as any)?.env?.UPSTASH_REDIS_REST_URL,
+          token: (process as any)?.env?.UPSTASH_REDIS_REST_TOKEN,
+        });
+    // Basic sanity check
+    if (!client) return (redisClient = null);
+    redisClient = client as Redis;
+  } catch {
+    redisClient = null;
   }
   return redisClient;
 }

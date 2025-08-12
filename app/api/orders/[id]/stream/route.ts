@@ -73,11 +73,17 @@ export async function GET(
       if (unsub) unsub();
     },
   });
-  return new NextResponse(stream, {
-    headers: {
-      "Content-Type": "text/event-stream; charset=utf-8",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-    },
-  });
+  try {
+    return new NextResponse(stream, {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+      },
+    });
+  } catch (e) {
+    return NextResponse.json(
+      { error: "Failed to open stream" },
+      { status: 500 }
+    );
+  }
 }
