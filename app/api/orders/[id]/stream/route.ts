@@ -46,12 +46,13 @@ export async function GET(
   let unsub: (() => void) | null = null;
   let hbTimer: number | null = null;
 
-  const stream = new ReadableStream<string>({
+  const stream = new ReadableStream<Uint8Array>({
     start(controller) {
+      const encoder = new TextEncoder();
       const safeEnqueue = (chunk: string) => {
         if (closed) return;
         try {
-          controller.enqueue(chunk);
+          controller.enqueue(encoder.encode(chunk));
         } catch {
           // ignore enqueue after close
         }
