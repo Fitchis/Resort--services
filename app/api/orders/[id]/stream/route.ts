@@ -4,12 +4,42 @@ import { getToken } from "next-auth/jwt";
 
 export const runtime = "edge";
 
+async function getTokenWithFallback(request: Request) {
+  const secret = process.env.NEXTAUTH_SECRET;
+  let t = await getToken({ req: request as any, secret });
+  if (t) return t;
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "authjs.session-token",
+  });
+  if (t) return t;
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "__Secure-authjs.session-token",
+  });
+  if (t) return t;
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "next-auth.session-token",
+  });
+  if (t) return t;
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "__Secure-next-auth.session-token",
+  });
+  return t;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Optional: if you want to restrict by staff or by order ownership, check token here
-  await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET });
+  await getTokenWithFallback(request);
   const { id } = await params;
   const channel = `order:${id}`;
   let closed = false;

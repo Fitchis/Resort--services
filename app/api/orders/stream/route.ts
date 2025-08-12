@@ -4,11 +4,40 @@ import { getToken } from "next-auth/jwt";
 
 export const runtime = "edge";
 
-export async function GET(request: Request) {
-  const token = await getToken({
+async function getTokenWithFallback(request: Request) {
+  const secret = process.env.NEXTAUTH_SECRET;
+  let t = await getToken({ req: request as any, secret });
+  if (t) return t;
+  // NextAuth v5 cookie names
+  t = await getToken({
     req: request as any,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret,
+    cookieName: "authjs.session-token",
   });
+  if (t) return t;
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "__Secure-authjs.session-token",
+  });
+  if (t) return t;
+  // Legacy v4 cookie names
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "next-auth.session-token",
+  });
+  if (t) return t;
+  t = await getToken({
+    req: request as any,
+    secret,
+    cookieName: "__Secure-next-auth.session-token",
+  });
+  return t;
+}
+
+export async function GET(request: Request) {
+  const token = await getTokenWithFallback(request);
   const role = (token as { role?: string } | null)?.role;
   const staff = role === "admin" || role === "manager" || role === "kitchen";
   if (!staff) return new NextResponse("Unauthorized", { status: 401 });
