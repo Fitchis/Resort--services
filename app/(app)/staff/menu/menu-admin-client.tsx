@@ -356,19 +356,19 @@ export default function MenuAdminClient() {
         <CardHeader>
           <CardTitle className="text-base">Existing items</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 overflow-x-hidden">
           <div className="flex flex-wrap items-center gap-3 mb-1">
             <Input
               placeholder="Search items"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs"
+              className="w-full sm:max-w-xs"
             />
             <Select
               value={filterCat}
               onValueChange={(v) => setFilterCat(v as typeof filterCat)}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-40 sm:w-[180px]">
                 <SelectValue placeholder="Filter by category" />
               </SelectTrigger>
               <SelectContent>
@@ -648,7 +648,7 @@ export default function MenuAdminClient() {
                   ) : (
                     <>
                       <div className="font-medium">{it.name}</div>
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground break-words">
                         {it.description}
                       </div>
                       <div className="flex items-center gap-2 text-sm">
@@ -676,8 +676,8 @@ export default function MenuAdminClient() {
                         {data?.categories.find((c) => c.id === it.category_id)
                           ?.name ?? "—"}
                       </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-wrap items-center gap-2">
                           <Button
                             size="sm"
                             variant="secondary"

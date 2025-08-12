@@ -48,7 +48,7 @@ export default async function RoomMenuPage({
             </Suspense>
           </div>
         </div>
-        <aside className="lg:sticky lg:top-24">
+        <aside className="min-w-0 lg:sticky lg:top-24">
           <CartSheet roomNumber={roomNumber} />
         </aside>
       </div>

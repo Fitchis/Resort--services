@@ -114,7 +114,7 @@ export default function MenuGrid() {
           placeholder="Search dishes, e.g., pasta"
           aria-label="Search menu"
         />
-        <div className="flex items-center gap-4 rounded-md border border-muted bg-card p-2 text-sm text-card-foreground">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 rounded-md border border-muted bg-card p-2 text-sm text-card-foreground">
           <Filter className="h-4 w-4" />
           <label className="flex items-center gap-2">
             <Checkbox

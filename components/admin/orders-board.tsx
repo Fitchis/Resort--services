@@ -259,7 +259,7 @@ export default function OrdersBoard() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
         <div className="flex items-center gap-2 text-xs">
           {liveStatus === "live" && (
             <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
@@ -293,7 +293,7 @@ export default function OrdersBoard() {
                 <StatusBadge status={col.key} />
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 overflow-x-hidden">
               {(grouped.get(col.key) ?? []).map((o) => (
                 <div
                   key={o.id}

@@ -235,13 +235,13 @@ export default function RoomsAdminClient() {
         <CardHeader>
           <CardTitle className="text-base">Existing rooms</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-3">
+        <CardContent className="space-y-3 overflow-x-hidden">
+          <div className="flex flex-wrap items-center gap-3">
             <Input
               placeholder="Search rooms"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs"
+              className="w-full sm:max-w-xs"
             />
           </div>
           {(filtered ?? []).map((r) => (
@@ -301,10 +301,10 @@ function RoomRow({
 
   return (
     <div className="grid gap-2 rounded-md border border-card bg-card p-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="grid gap-1">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="grid gap-1 min-w-0">
           <button
-            className="flex items-center gap-2 text-left"
+            className="flex items-center gap-2 text-left min-w-0"
             onClick={() => {
               setOpen((v) => !v);
               if (!open) refetch();
@@ -316,13 +316,15 @@ function RoomRow({
             ) : (
               <ChevronRight className="h-4 w-4" />
             )}
-            <span className="font-medium">Room {room.room_number}</span>
+            <span className="font-medium truncate">
+              Room {room.room_number}
+            </span>
           </button>
-          <div className="text-xs text-muted-foreground flex items-center gap-2">
+          <div className="text-xs text-muted-foreground flex flex-wrap items-center gap-2">
             <span className="capitalize">{room.status}</span>
             <span>•</span>
             {!editingGuest ? (
-              <span className="inline-flex items-center gap-2">
+              <span className="inline-flex flex-wrap items-center gap-2">
                 <span>
                   Guest:{" "}
                   {room.current_guest && room.current_guest.length > 0
@@ -342,7 +344,7 @@ function RoomRow({
                 </Button>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-2">
+              <span className="inline-flex flex-wrap items-center gap-2">
                 <Input
                   value={guestDraft}
                   onChange={(e) => setGuestDraft(e.target.value)}
@@ -376,7 +378,7 @@ function RoomRow({
                     }
                   }}
                   placeholder="Guest name (empty to clear)"
-                  className="h-7 w-[200px]"
+                  className="h-7 w-48 sm:w-56 md:w-64 max-w-full min-w-0"
                   maxLength={80}
                 />
                 <Button
@@ -426,7 +428,7 @@ function RoomRow({
           {room.qr_code_url && (
             <a
               href={room.qr_code_url}
-              className="text-xs text-primary underline"
+              className="text-xs text-primary underline truncate"
               target="_blank"
               rel="noreferrer"
             >
@@ -434,7 +436,7 @@ function RoomRow({
             </a>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto sm:justify-end">
           <Select
             value={room.status}
             onValueChange={(v) =>
@@ -444,7 +446,7 @@ function RoomRow({
               })
             }
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-32 sm:w-36">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -458,6 +460,7 @@ function RoomRow({
           {!editingGuest && (
             <Button
               variant="secondary"
+              size="sm"
               onClick={() =>
                 onUpdate({
                   room_number: room.room_number,
@@ -470,7 +473,9 @@ function RoomRow({
           )}
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete</Button>
+              <Button variant="destructive" size="sm">
+                Delete
+              </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
